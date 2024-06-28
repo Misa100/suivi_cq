@@ -1,0 +1,16 @@
+@import "~bootstrap/dist/css/bootstrap.css";
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+@import "~bootstrap-icons/font/bootstrap-icons.css";
+body{
+    background-color: rgb(245, 245, 245);
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('assets/police/Poppins-Regular.ttf') format('truetype');
+}
+
+* {
+    font-family: 'Poppins';
+    font-size: 15px;
+}

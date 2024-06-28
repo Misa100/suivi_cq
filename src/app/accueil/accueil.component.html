@@ -1,0 +1,246 @@
+<div class="p-4">
+    <h4>Suivi contrôle qualité</h4>
+    <hr class="w-50">
+    <div class="row">
+        <div class="col-sm-2 p-2">
+            <div class="form-floating ">
+                <input type="date" class="form-control" id="floatingInput" placeholder="name@example.com" [(ngModel)]="date_debut">
+                <label for="floatingInput">Date début</label>
+            </div>
+        </div>
+        <div class="col-sm-2 p-2" >
+            <div class="form-floating">
+                <input type="date" class="form-control" id="floatingPassword" placeholder="Password" [(ngModel)]="date_fin">
+                <label for="floatingPassword">Date fin</label>
+            </div>
+        </div>
+        <div class="col-sm-2 p-2">
+            <div class="mt-2">
+                <button class="btn mx-2" style="background-color: rgba(179, 234, 196, 0.626);" (click)="filter_suivi(date_debut,date_fin)"><i class="bi bi-funnel"></i></button>
+                <button class="btn" style="background-color: rgba(0, 0, 0, 0.239);" (click)="resetFilter()"><i class="bi bi-x-lg"></i></button>
+                <button class="btn btn-light ms-3" (click)="resetFilter()"><i class="bi bi-house"></i> Total <span class="text-white px-2 rounded" style="background-color: rgba(126, 124, 130, 0.676);">{{totalcount}}</span></button>
+            </div>
+        </div>
+        <div class="col-sm-2 bg-white p-2 rounded shadow-sm cursor-pointer">
+            <h6 class="border-bottom border-2 d-flex justify-content-between" style="border-bottom: 2px solid rgb(116, 194, 236) !important;"><h6><button type="button" class="btn btn-sm text-white" style="background-color: rgb(116, 194, 236);" (click)="filterByStatus('1')">En Attente</button> </h6> <h6 class="badge mt-0" style="background-color: rgb(116, 194, 236);">{{countAttente}}</h6></h6>
+            <h6 class="border-bottom border-2 d-flex justify-content-between" style="border-bottom: 2px solid rgb(237, 200, 124) !important;"><h6><button type="button" class="btn btn-sm text-white" style="background-color: rgb(237, 200, 124);" (click)="filterByStatus('2')">Exhaustivité</button>  </h6> <h6 class="badge mt-0" style="background-color: rgb(237, 200, 124);">{{countEncours}}</h6></h6>
+        </div>
+        <div class="col-sm-2 ms-3 bg-white p-2 rounded shadow-sm cursor-pointer">
+            <h6 class="border-bottom border-2 d-flex justify-content-between" style="border-bottom: 2px solid rgba(156, 160, 162, 0.908) !important;"><h6><button type="button" class="btn btn-sm text-white" style="background-color: rgba(156, 160, 162, 0.908);" (click)="filterByStatus('3')">Echantillonage</button>  </h6> <h6 class="badge mt-0" style="background-color: rgba(156, 160, 162, 0.908);">{{countReserver}}</h6></h6>
+            <h6 class="border-bottom border-2 d-flex justify-content-between" style="border-bottom: 2px solid rgba(56, 167, 123, 0.794) !important;"><h6><button type="button" class="btn btn-sm text-white" style="background-color: rgba(56, 167, 123, 0.794);" (click)="filterByStatus('4')">Terminé</button> </h6> <h6 class="badge mt-0" style="background-color: rgba(56, 167, 123, 0.794);">{{countTerminer}}</h6></h6>
+        </div>
+        <div class="col-sm-12">
+            <div class="table-container">
+                <table class="table text-center mt-3">
+                    <thead class="table-success" style="vertical-align: middle; white-space: nowrap;">
+                        <tr >
+                            <th>Statut</th>
+                            <th>Nom du batch</th>
+                            <th>Nb <br>Lots</th>
+                            <th>Nb <br>Actes</th>
+                            <th>Type <br>de contrôle</th>
+                            <th>Taille <br>de l'échantillon</th>
+                            <th>Seuil <br>d'acceptation</th>
+                            <th>Date <br>de contrôle</th>
+                            <th>ID <br>contrôleur</th>
+                            <th>Nb <br>Actes NC</th>
+                            <th>Décision</th>
+                            <th>Score <br> de passage</th>
+                            <th>Reprise</th>
+                            <th colspan="2">BCQ</th>
+                        </tr>            
+                    </thead>
+                    <tbody>
+                        <ng-container *ngFor="let item of filteredListLivraison; let i = index">
+                            <tr [ngClass]="{'border-bottom border-success': item.etat == '4', 'border-bottom border-primary': item.etat == '1', 'border-bottom border-warning': item.etat == '2', 'border-bottom border-dark': item.etat == '3'}" *ngIf="selectedStatus === null || selectedStatus == item.etat">
+                                <td>{{item.lib_etat}}</td>
+                                <td>{{item.nom_livrable}}</td>
+                                <td>{{item.nb_lot}}</td>
+                                <td>{{item.nb_acte}}</td>
+                                <td>
+                                    <select class="form-select text-center" [(ngModel)]="item.type_control" disabled>
+                                        <option *ngFor="let obj of list_type_control" [value]="obj.id_type_controle">{{obj.type_controle}}</option>
+                                    </select>
+                                </td>
+                                <td>{{item.taille_echantillon}}</td>
+                                <td>{{item.seuil_acceptation}}</td>
+                                <td>{{item.date_controle}}</td>
+                                <td>{{item.matricule_controleur}}</td>
+                                <td>{{item.nb_acte_nc}}</td>
+                                <td>
+                                    <div class="btn-group me-2" role="group" aria-label="First group">
+                                        <button type="button" class="btn border" [ngClass]="{'btn-success': item.decision != null && item.decision == 'V'}">V</button>
+                                        <button type="button" class="btn border" [ngClass]="{'btn-danger': item.decision != null && item.decision == 'R'}">R</button>
+                                    </div>
+                                </td>
+                                <td>{{item.score_passage}}</td>
+                                <td><button type="button" [disabled]="item.decision === 'V' || item.lib_etat !== 'Terminé'" class="btn btn-sm" (click)="selectItemReprise(item)" data-bs-toggle="modal" data-bs-target="#exampleModal" style="background-color: rgba(222, 226, 225, 0.52);"><i class="bi bi-eye-fill"></i></button></td>
+                                <td><button type="button" [disabled]="item.lib_etat !== 'Terminé'" class="btn btn-sm" style="padding: 2px 5px; font-size: 13px; background-color: rgba(186, 218, 235, 0.615);" (click)="selectItem(item)" data-bs-toggle="modal" data-bs-target="#staticBackdrop"><i class="bi bi-file-earmark-arrow-down"></i></button></td>
+                                <td><button type="button" [disabled]="item.lib_etat !== 'Terminé'" class="btn btn-sm" style="background-color: rgba(121, 211, 169, 0.363); padding: 2px 5px; font-size: 12px;" (click)="saveDownload(item)"><i class="bi bi-download"></i></button></td>
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Modal Reprise -->
+<div [ngClass]="{'modal fade': true, 'show': showModal}" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-xl">
+    <div class="modal-content">
+    <div class="modal-body">
+        <h5 class="modal-title" id="exampleModalLabel">Détails reprise</h5>
+        <table class="table table-bordered mt-2">
+            <thead class="table-warning text-center" style="vertical-align: middle;">
+                <tr >
+                    <th>Nom Batch</th>
+                    <th>Nb Lots</th>
+                    <th>Nb Actes</th>
+                    <th>Type de contrôle</th>
+                    <th>Taille d'échantillon</th>
+                    <th>Seuil d'acceptation</th>
+                    <th>Date de contrôle</th>
+                    <th>Contrôleur</th>
+                    <th>Score de passage</th>
+                </tr>     
+            </thead>
+            <tbody class="text-center">
+                <ng-container>
+                    <tr *ngFor="let item of reprise">
+                        <td>{{item.nom_livrable}}</td>
+                        <td>{{item.nb_lot}}</td>
+                        <td>{{item.nb_acte}}</td>
+                        <td>
+                            <select class="form-select text-center" [(ngModel)]="item.type_control" disabled>
+                                <option *ngFor="let obj of list_type_control" [value]="obj.id_type_controle">{{obj.type_controle}}</option>
+                            </select>
+                        </td>
+                        <td>{{item.taille_echantillon}}</td>
+                        <td>{{item.seuil_acceptation}}</td>
+                        <td>{{item.date_controle}}</td>
+                        <td>{{item.matricule_controleur}}</td>
+                        <td>{{item.score_passage}}</td>
+                    </tr>
+                </ng-container>
+                
+            </tbody>
+        </table>
+    </div>
+    </div>
+</div>
+</div>
+  
+  <!-- Modal BCQ-->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="container border p-3">
+                    <h2 class="text-center" style="background-color: rgb(126, 225, 167);">BORDEREAUX CQ</h2>
+                    <h3 class="text-center" style="background-color: rgb(192, 228, 207);">PRODIGY</h3>
+                    <div *ngIf="selectedItem">
+                        <div class="row my-4">
+                            <div class="col">
+                                <h4>Description du batch :</h4>
+                                <p><strong>Nom du batch :</strong> {{selectedItem.nom_livrable}}</p>
+                                <p><strong>Nombre de lot :</strong> {{selectedItem.nb_lot}}</p>
+                                <p><strong>Nombre Fichier :</strong> {{selectedItem.nb_acte}}</p>
+                                <p><strong>Date de contrôle :</strong> {{selectedItem.date_controle}}</p>
+                                <p><strong>Heure début du contrôle :</strong> {{selectedItem.date_debut}}</p>
+                                <p><strong>Heure fin du contrôle :</strong> {{selectedItem.date_fin}}</p>
+                                <p><strong>Matricule du contrôleur :</strong> {{selectedItem.matricule_controleur}}</p>
+                            </div>
+                            <div class="col">
+                                <h4>Critère de rejet appliqué :</h4>
+                                <p>Le batch est rejeté si le seuil d'acceptation est dépassé</p>
+                                <p>Une unité est non-conforme si présence d'une faute</p>
+                            </div>
+                        </div>
+                        <div class="row my-4">
+                            <div class="col">
+                                <h4>Contrôle exhaustivité :</h4>
+                                <table class="table table-bordered">
+                                <thead>
+                                    <tr class="text-center tableNote">
+                                    <th>Points vérifiés</th>
+                                    <th>Décision</th>
+                                    <th>Commentaire</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="text-center">
+                                    <td>Validité :</td>
+                                    <td>{{selectedItem.commentaire_validite}}</td>
+                                    <td>{{selectedItem.decision_validite}}</td>
+                                    </tr>
+                                    <tr class="text-center">
+                                    <td>Structure :</td>
+                                    <td>{{selectedItem.commentaire_structure}}</td>
+                                    <td>{{selectedItem.decision_structure}}</td>
+                                    </tr>
+                                    <tr class="text-center">
+                                    <td>Exhaustivité :</td>
+                                    <td>{{selectedItem.commentaire_exhaustivite}}</td>
+                                    <td>{{selectedItem.decision_exhaustivite}}</td>
+                                    </tr>
+                                </tbody>
+                                </table>
+                            </div>
+                            <div class="col">
+                                <h4>Qualité réalisée :</h4>
+                                <p><strong>Contrôle exhaustivité :</strong> {{selectedItem.controle_exhaustivite}}</p>
+                                <p><strong>Contrôle échantillonné :</strong> {{selectedItem.controle_echantillonne}}</p>
+                                <p><strong>Nombre d'unité non-conforme :</strong> {{selectedItem.nbr_unite_non_conforme}}</p>
+                            </div>
+                        </div>
+                        <div class="row my-4">
+                            <div class="col">
+                                <h4>Contrôle échantillonné :</h4>
+                                <p><strong><U>Plan d'échantillonnage appliqué</U></strong></p>
+                                <p><strong>Volume échantillonné :</strong> {{selectedItem.taille_echantillon}}</p>
+                                <p><strong>Unité :</strong> Acte</p>
+                                <p><strong>Type de contrôle :</strong> {{selectedItem.nom_control}}</p>
+                                <p><strong>NQA :</strong> 1/10</p>
+                                <p><strong>Seuil d'acceptation :</strong> {{selectedItem.seuil_acceptation}}</p>
+                                <p><strong>Seuil de rejet :</strong> {{selectedItem.seuil_acceptation + 1}}</p>
+                            </div> 
+                        </div>
+                        <div class="row my-4">
+                            <div class="col">
+                            <h4>Détail d'échantillonnage :</h4>
+                                <table class="table table-bordered">
+                                    <thead style="vertical-align: middle;">
+                                        <tr class="text-center tableNote">
+                                            <th>Lot</th>
+                                            <th>Fichier</th>
+                                            <th>Type</th>
+                                            <th>Unité non-conforme</th>
+                                            <th>NB faute majeure</th>
+                                            <th>Liste fautes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <ng-container *ngFor="let item of echantillonError">
+                                            <tr *ngFor="let it of item.echantillon" class="text-center">
+                                                <td style="width: 20%; font-size: small">{{ it.nom_fichier }}</td>
+                                                <td style="width: 35%; font-size: small">{{ it.nom_image }}</td>
+                                                <td style="width: 20%; font-size: small">{{ it.nom_typage }}</td>
+                                                <td style="width: 5%; font-size: small">{{item.unite_non_conforme}}</td>
+                                                <td style="width: 5%; font-size: small;">{{item.nbr_faute}}</td>
+                                                <td [style.background-color]="item.liste_faute === 'vide' ? '#f0f5f1' : 'rgb(235, 225, 225)'" style="width: 50%; font-size: x-small;">{{item.liste_faute}}</td>
+                                            </tr>
+                                        </ng-container>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="position: absolute; top: -20px; right: -20px;">
+                <button type="button" class="btn" style="background-color: rgb(220, 156, 156);" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i></button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,19 @@
+demande:
+etat (description)
+0: en attente
+1: en cours ( si tache + 1)
+2: terminer
+3: refuser
+4: en attente par le demandeur (validation final de l'application)
+5: annuler demande
+6: accepté (par le developpeur)
+7: completer
+
+
+
+tache:
+0: En Attente (apres enregistrement)
+1: En Cours (onclick en cours btn)
+2: Terminer (tache terminée)
+3: En pause 
+

@@ -1,0 +1,225 @@
+<div class="w-100 mt-2 p-2">
+  <div class="row">
+    <div class="col-lg-4">
+      <div class="form-floating">
+        <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" [(ngModel)]="titreLogin" (change)="updateTitreApp(titreLogin,titreMenuMax,titreMenuMin)">
+        <label for="floatingInput">Nom de l'application</label>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="form-floating">
+        <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" (change)="updateTitreApp(titreLogin,titreMenuMax,titreMenuMin)"  [(ngModel)]="titreMenuMax">
+        <label for="floatingInput">Titre (Menu Max)</label>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="form-floating">
+        <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" (change)="updateTitreApp(titreLogin,titreMenuMax,titreMenuMin)"  [(ngModel)]="titreMenuMin">
+        <label for="floatingInput">Titre (Menu Min)</label>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="w-100 mt-1 p-2">
+  <div class="d-flex flex-row align-items-center justify-content-between">
+    <span class="fs-2">Liste de menus</span>
+    <hr class="bg-success rounded" style="width: 85%; padding: 2px;">
+  </div>
+  <!-- Titre Colonne -->
+  <div class="py-2 mb-2 mt-1 rounded-top d-flex flex-row justify-content-around text-center" style="background-color: rgba(190, 190, 190, 0.393)">
+    <span style="width: 3%;"></span>
+    <span style="width: 5%; padding-left: 5px;">Icons</span>
+    <span style="width: 25%;">Noms</span>
+    <span style="width: 25%;">Routes</span>
+    <span style="width: 5%;">Rang</span>
+    <span style="width: 8%; padding-left: 5px;">Accessibilité</span>
+    <span style="width: 3%;"></span>
+    <span style="width: 4%;"></span>
+  </div>
+
+  <!-- Corps Colonne / Liste Menu -->
+  <div class="corps-list border rounded-bottom" cdkDropList (cdkDropListDropped)="drop($event)">
+    <div *ngFor="let item of liste_menu; let i = index" cdkDrag cdkDragLockAxis="y" class="list ps-4">
+      <div class="w-100 d-flex flex-row justify-content-between align-items-center p-2">
+
+        <!-- Bouton Collapse Sous Menu -->
+        <div>
+          <button class="btn" data-bs-toggle="collapse" style="background-color: rgb(242, 242, 242);" [attr.data-bs-target]="'#collapse'+(i+1)" aria-expanded="false" aria-controls="flush-collapseOne" ngbTooltip="Sous menu"> <i class="bi bi-list-nested" *ngIf="item.route_menu == ''"></i> <i class="bi bi-dash" *ngIf="item.route_menu != ''"></i> </button>
+        </div>
+
+        <!-- Icon Menu -->
+        <div style="width:5%" class="text-center">
+          <button type="button" class="btn btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#showUpdateIcon" style="width: 45px; height:45px;"><i class="{{item.icon_menu}}"></i></button>
+        </div>
+
+        <!-- Nom Menu -->
+        <div style="width:25%">
+            <input type="text" [(ngModel)]="item.nom_menu" class="p-2 ps-4 pe-4 fs-6 form-control form-control-sm">
+        </div>
+
+        <!-- DISABLED IF ROUTE == GESTION-MENU / Route Menu -->
+        <div style="width: 25%;">
+          <input type="text" [(ngModel)]="item.route_menu" class="p-2 ps-4 pe-4 fs-6 form-control form-control-sm" [disabled]="item.sous_menu.length != 0">
+        </div>
+
+        <!-- Rang Menu -->
+        <div style="width: 5%;">
+          <input type="text" class="p-2 fs-6 text-center form-control form-control-sm" value="{{i+1}}" [disabled]="true">
+        </div>
+
+        <!-- Accessibilite -->
+        <div style="width: 8%;">
+          <select name="" id="" [(ngModel)]="item.accessibilite" class="p-2 fs-6 text-center form-control form-control-sm">
+            <option value="1">Niveau 1</option>
+            <option value="2">Niveau 2</option>
+            <option value="3">Niveau 3</option>
+          </select>
+        </div>
+
+        <!-- CANNOT DELETE IF ROUTE == GESTION-MENU / Actions (Modifier et Supprimer) Menu -->
+        <div  style="width:3%;" class="text-center d-flex flex-row justify-content-between align-items-center">
+          <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="tooltip" title="Modifier" (click)="modifierMenu(item)" ><i class="bi bi-pen-fill"></i></button>
+          <button class="btn btn-sm btn-outline-danger ms-2" data-bs-toggle="tooltip" title="Supprimer" (click)="supprimerMenu(item.id_menu)" ><i class="bi bi-trash3-fill"></i></button>
+        </div>
+
+        <!-- Bouton Drag & Drop Menu -->
+        <div style="width:4%;" class="text-center" id="dragstyle" cdkDragHandle>
+          <i class="bi bi-grip-vertical" style="font-size: 20px;"></i>
+        </div>
+
+      </div>
+
+
+      <!-- Sous MENU -->
+      <div class="collapse" [attr.id]="'collapse'+(i+1)" *ngIf="item.route_menu == ''">
+        <div class="rounded border mt-2 mb-3 p-2 me-4" id="colMain">
+          <div class="corps-listSousMenu" cdkDropList (cdkDropListDropped)="dropSousMenu($event, i, item.id_menu)">
+            <div *ngFor="let itemSM of item.sous_menu; let y = index" cdkDrag cdkDragLockAxis="y" class="listSousMenu">
+              <div class="w-100 d-flex flex-row justify-content-between align-items-center mt-1">
+
+                <!-- Icon Sous Menu -->
+                <div style="width:5%" class="text-center">
+                  <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#showUpdateIcon" style="width: 45px; height:45px;"><i class="{{itemSM.icon_sous_menu}}"></i></button>
+                </div>
+
+                <!-- Nom Sous Menu -->
+                <div style="width:30%">
+                    <input type="text" [(ngModel)]="itemSM.nom_sous_menu" class="p-2 ps-4 pe-4 fs-6 form-control form-control-sm">
+                </div>
+
+                <!-- Route Sous Menu -->
+                <div style="width: 30%;">
+                  <input type="text" [(ngModel)]="itemSM.route_sous_menu" class="p-2 ps-4 pe-4 fs-6 form-control form-control-sm">
+                </div>
+
+                <!-- Rang Sous Menu -->
+                <div style="width: 8%;">
+                  <input type="text" class="p-2 fs-6 text-center form-control form-control-sm" value="{{y+1}}" [disabled]="true">
+                </div>
+
+                <div style="width: 8%;">
+                  <select name="" id="" class="p-2 fs-6 text-center form-control form-control-sm" [(ngModel)]="itemSM.accessibilite_sous_menu" [disabled]="itemSM.route_sous_menu == 'gestion-menu' || itemSM.route_sous_menu == 'users'">
+                    <option value="1" [disabled]="item.accessibilite > 1">Niveau 1</option>
+                    <option value="2" [disabled]="item.accessibilite > 2">Niveau 2</option>
+                    <option value="3">Niveau 3</option>
+                  </select>
+                </div>
+
+                <!-- CANNOT DELETE IF ROUTE == GESTION-MENU / Actions (Modifier et Supprimer) Sous Menu -->
+                <div style="width: 3%;" class="text-center d-flex flex-row justify-content-between align-items-center">
+                  <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="tooltip" title="Modifier" (click)="modifierSousMenu(item.sous_menu ,item.id_menu, i, y)"><i class="bi bi-pen-fill"></i></button>
+                  <button class="btn btn-sm btn-outline-danger ms-2" data-bs-toggle="tooltip" title="Supprimer" (click)="supprimerSousMenu(item.id_menu ,i, y)"><i class="bi bi-trash3-fill"></i></button>
+                </div>
+
+                <!-- Bouton Drag & Drop Sous Menu -->
+                <div style="width:4%;" class="text-center" id="dragstyle" cdkDragHandle>
+                  <i class="bi bi-grip-vertical" style="font-size: 20px;"></i>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <!-- <hr> -->
+          <!-- Ligne d'Ajout Sous Menu -->
+          <div class="w-100 d-flex flex-row justify-content-between align-items-center mt-1 mb-1">
+
+              <div style="width:5%" class="text-center">
+                  <button type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#showIconSousMenu'+(i+1)" class="btn btn-outline-secondary" style="width: 45px; height:45px;"><i class="{{iconSousMenu}}" aria-hidden="true"></i></button>
+              </div>
+              <div style="width:30%">
+                  <input type="text" [(ngModel)]="nomSousMenu" class="p-2 ps-4 pe-4 fs-6  form-control form-control-sm">
+              </div>
+              <div style="width: 30%;">
+                  <input type="text" [(ngModel)]="routeSousMenu" class="p-2 ps-4 pe-4 fs-6  form-control form-control-sm">
+              </div>
+              <div style="width: 8%;">
+                  <input type="text"  class="p-2 text-center fs-6 form-control form-control-sm" [disabled]="true">
+              </div>
+              <div style="width: 8%;">
+                  <select name="" id="" class="p-2 fs-6 text-center form-control form-control-sm" [(ngModel)]="accessibilite_sous_menu">
+                    <option value="1" [disabled]="item.accessibilite > 1">Niveau 1</option>
+                    <option value="2" [disabled]="item.accessibilite > 2">Niveau 2</option>
+                    <option value="3">Niveau 3</option>
+                  </select>
+              </div>
+              <div style="width: 3%;" class="text-center d-flex flex-row justify-content-around align-items-center">
+                  <button class="btn btn-sm btn-outline-success" data-bs-toggle="tooltip" title="Ajouter" (click)="ajoutSousMenus(iconSousMenu,nomSousMenu,routeSousMenu,accessibilite_sous_menu,i,item.id_menu)" [disabled]="readyToAddSousMenu"><i class="bi bi-check-lg"></i></button>
+                  <button class="btn btn-sm btn-outline-secondary ms-2" data-bs-toggle="tooltip" title="Annuler" (click)="annulerAjout()"><i class="bi bi-x-lg"></i></button>
+              </div>
+              <div style="width: 4%;"></div>
+          </div>
+          <div class="showIconSousMenu collapse" [attr.id]="'showIconSousMenu'+(i+1)">
+              <div class="rounded border mt-2 mb-2 p-2">
+                <input type="text" [(ngModel)]="searchIconSM" class="form-control mb-2 ms-3 w-25 inputSearch" placeholder="Recherche icon...">
+                  <div *ngFor="let icon of icon | appFilter: searchIconSM" class="d-inline">
+                      <button class="mt-1 ms-1 btn btn-sm btn-outline-secondary text-center px-2" style="width: 40px; height:40px;" (click)="getIconSousMenu(icon)"><i class="{{icon}}"></i></button>
+                  </div>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- <hr> -->
+  <!-- Ligne d'Ajout Menu -->
+  <div class="ps-4 pe-4 pt-2 pb-2 rounded border shadow-sm mt-2" style="background-color: rgba(255, 255, 255, 0.627);">
+      <div class="w-100 d-flex flex-row justify-content-between align-items-center">
+
+          <div style="width: 3%;"></div>
+          <div style="width:5%" class="text-center">
+              <button type="button" data-bs-toggle="collapse" data-bs-target="#showIcon" class="btn btn-outline-secondary" style="width: 45px; height:45px;"><i class="{{iconMenu}}" aria-hidden="true"></i></button>
+          </div>
+          <div style="width:25%">
+              <input type="text" [(ngModel)]="nomMenu" class="p-2 ps-4 pe-4 fs-6  form-control form-control-sm">
+          </div>
+          <div style="width: 25%;">
+              <input type="text" [(ngModel)]="routeMenu" class="p-2 ps-4 pe-4 fs-6  form-control form-control-sm">
+          </div>
+          <div style="width: 5%;">
+              <input type="text" [(ngModel)]="nextRang" class="p-2 text-center fs-6 form-control form-control-sm" [disabled]="true">
+          </div>
+          <div style="width: 8%;">
+            <select [(ngModel)]="accessibilite" class="p-2 text-center fs-6 form-control form-control-sm">
+              <option value="1">Niveau 1</option>
+              <option value="2">Niveau 2</option>
+              <option value="3">Niveau 3</option>
+            </select>
+          </div>
+          <div style="width: 3%;" class="text-center d-flex flex-row justify-content-between align-items-center">
+              <button class="btn btn-sm btn-outline-success" data-bs-toggle="tooltip" title="Ajouter" (click)="ajouterMenu(iconMenu, nomMenu, routeMenu, accessibilite)" [disabled]="readyToAdd"><i class="bi bi-check-lg"></i></button>
+              <button class="btn btn-sm btn-outline-secondary ms-2" data-bs-toggle="tooltip" title="Annuler" (click)="annulerAjout()"><i class="bi bi-x-lg"></i></button>
+          </div>
+          <div style="width: 3%;"></div>
+      </div>
+      <div class="collapse" id="showIcon">
+        <div class="rounded border mt-2 mb-2 p-2">
+            <input type="text" [(ngModel)]="searchIconMenu" class="form-control mb-2 ms-1 w-25 inputSearch" placeholder="Recherche icon...">
+              <div *ngFor="let icon of icon | appFilter: searchIconMenu" class="d-inline">
+                  <button class="mt-1 ms-1 btn btn-sm btn-outline-secondary text-center px-2" style="width: 40px; height:40px;" (click)="getIcon(icon)"><i class="{{icon}}"></i></button>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>

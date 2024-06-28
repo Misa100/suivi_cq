@@ -1,0 +1,90 @@
+<div id="body-login" class="d-flex flex-row justify-content-center align-items-center" *ngIf="hideLogin">
+    <div class="p-2 rounded shadow" id="login">
+        <div class="p-5 text-center">
+            <img src="assets/images/24013476470 (2).png" class="mb-3" alt="LOGO" width="90" height="90">
+            <br><span class="text-white" style="font-size: 48px;">Luminess</span>
+            <br><span id="titreApplication">{{nameApp}}</span>
+            <div class="mt-4">
+                <div class="input-wrapper">
+                    <input autocomplete="off" class="input" type="text" maxlength="5" placeholder="33346" [(ngModel)]="matricule" />
+                    <label class="label" for="name">Matricule</label>
+                    <button class="clear" aria-label="Clear input" (click)="resetLogin()"> <i class="bi bi-x-lg"></i> </button>
+                </div>
+                <div class="input-wrapper">
+                    <input autocomplete="off" class="input" [type]="showPassword ? 'text' : 'password'" placeholder="test" [(ngModel)]="password" />
+                    <label class="label" for="name">Mot de passe</label>
+                    <button class="clear" aria-label="Clear input" (click)="showPassword = !showPassword"> <i [ngClass]="{'bi bi-eye':showPassword,'bi bi-eye-slash':!showPassword}"></i> </button>
+                </div>
+            </div>
+            <div class="mt-5">
+                <button class="px-4 py-2" id="btn_connexion" (click)="connexion()">Connexion</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div *ngIf="hideMenu">
+    <div class="fixed-top d-flex flex-column justify-content-between h-100" [ngClass]="{'menu':menuResize, 'menu2':!menuResize}">
+        <div>
+            <div id="donnee_admin" class="w-100" style="margin-top: 18px;">
+                <span class="h4 fw-lighter">
+                    <a class="text-white" routerLink="/accueil" (click)="changeTitle('accueil', '')" id="text1">{{menuResize ? nameMenuMax : nameMenuMin}}</a>
+                    <a class="text-white" routerLink="/accueil" (click)="changeTitle('accueil', '')" id="text2">{{nameMenuMin}}</a>
+                </span>
+            </div>
+            <div style="margin-top: 18px;">
+                <div *ngFor="let itemMenu of liste_menu; let i = index">
+                    <button *ngIf="itemMenu.route_menu != ''" class="w-100 mt-1" [ngClass]="{'btn_menu':menuResize, 'btn_menu2':!menuResize}" routerLink="/{{itemMenu.route_menu}}" (click)="changeTitle(itemMenu.route_menu, '')" routerLinkActive="is-active">
+                        <div>
+                            <i class="{{itemMenu.icon_menu}}" [ngClass]="{'icon_menu':menuResize, 'icon_menu2':!menuResize}"></i>
+                            <span [ngClass]="{'text_menu':menuResize, 'text_menu2':!menuResize}">{{itemMenu.nom_menu}}</span>
+                        </div>
+                        <div class="fleche"></div>
+                    </button>
+                    <button *ngIf="itemMenu.route_menu == ''" class="btn w-100 mt-1" [ngClass]="{'btn_menu':menuResize, 'btn_menu2':!menuResize}" [attr.data-bs-target]="'#collapseSM'+(i+1)" data-bs-toggle="collapse" (click)="changeTitle(itemMenu.route_menu, '')">
+                        <div>
+                            <i class="{{itemMenu.icon_menu}}" [ngClass]="{'icon_menu':menuResize, 'icon_menu2':!menuResize}"></i>
+                            <span [ngClass]="{'text_menu':menuResize, 'text_menu2':!menuResize}">{{itemMenu.nom_menu}}</span>
+                        </div>
+                        <div class="fleche"></div>
+                    </button>
+                    <div class="collapse mt-1 rounded" routerLinkActive="show" [attr.id]="'collapseSM'+(i+1)" style="background-color: rgba(162, 250, 190, 0.078);">
+                        <div *ngFor="let itemSM of itemMenu.sous_menu" [ngClass]="{'divSM':menuResize, 'divSM2':!menuResize}">
+                          <button class="btn btn-sm w-100" [ngClass]="{'btn_menu':menuResize, 'btn_menu2':!menuResize}" routerLink="/{{itemSM.route_sous_menu}}" routerLinkActive="is-active_SM" (click)="changeTitle(itemMenu.route_menu, itemSM.route_sous_menu)">
+                            <div>
+                                <i class="{{itemSM.icon_sous_menu}}" [ngClass]="{'icon_menu':menuResize, 'icon_menu2':!menuResize}"></i>
+                                <span [ngClass]="{'text_menu':menuResize, 'text_menu2':!menuResize}">{{itemSM.nom_sous_menu}}</span>
+                            </div>
+                            <div class="fleche"></div>
+                          </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button id="btn_deconnexion" class="py-3" (click)="deconnexion()"> 
+            <i class="bi bi-box-arrow-right" [ngClass]="{'icon_menu':menuResize, 'icon_menu2':!menuResize}"></i> 
+            <span [ngClass]="{'text_menu':menuResize, 'text_menu2':!menuResize}">Déconnexion</span>
+        </button>
+    </div>
+    
+    <div class="fixed-top" [ngClass]="{'topbar':menuResize, 'topbar2':!menuResize}">
+        <div class="bg-white shadow-sm rounded d-flex flex-row justify-content-between align-items-center" id="hidden">
+            <div style="color: rgb(75, 75, 75);">
+                <i class="bi bi-list me-3" (click)="changerMenuSize()"></i>
+                <span style="font-size: 15px;">{{titreComponent}}</span>
+            </div>
+            <div style="color: rgb(75, 75, 75);">
+                <span style="font-size: 14px;">{{matricule}}</span>
+                <button class="ms-2" id="icon-topBar" *ngIf="role != 'Utilisateur'" routerLink="/users" (click)="changeTitle('users', '')"> <i class="bi bi-people-fill" routerLinkActive="is-active-topbar"></i> </button>
+                <button class="ms-2" id="icon-topBar" *ngIf="role == 'Administrateur'" routerLink="/gestion-menu" (click)="changeTitle('gestion-menu', '')"> <i class="bi bi-list-ul" routerLinkActive="is-active-topbar"></i> </button>
+                <img src="assets/images/24013476470 (2).png" routerLink="/accueil" class="ms-2" style="margin-bottom: 4px;" alt="LOGO" height="20" width="20">
+            </div>
+        </div>
+    </div>
+    
+    <div [ngClass]="{'content':menuResize, 'content2':!menuResize}">        
+        <router-outlet></router-outlet>
+    </div>
+</div>
